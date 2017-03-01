@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <property name="safety_offset" value="0.02"/>
+  <xacro:property name="safety_offset" value="0.02"/>
 
+  <xacro:include filename="$(find schunk_description)/urdf/common.xacro" />
   <xacro:include filename="$(find schunk_description)/urdf/lwa4p_extended/lwa4p_extended.gazebo.xacro" />
   <xacro:include filename="$(find schunk_description)/urdf/lwa4p_extended/lwa4p_extended.transmission.xacro" />
 
@@ -10,7 +11,7 @@
     <xacro:if value="${has_podest}">
       <!-- joint between base_link and lwa4p_extended_connector_link -->
       <joint name="${name}_podest_joint" type="fixed">
-        <insert_block name="origin" />
+        <xacro:insert_block name="origin" />
         <parent link="${parent}"/>
         <child link="${name}_podest_link"/>
       </joint>
@@ -41,7 +42,7 @@
     <xacro:unless value="${has_podest}">
       <!-- joint between base_link and lwa4p_extended_connector_link -->
       <joint name="${name}_base_joint" type="fixed">
-        <insert_block name="origin" />
+        <xacro:insert_block name="origin" />
         <parent link="${parent}"/>
         <child link="${name}_base_link"/>
       </joint>
@@ -115,7 +116,7 @@
       <child link="${name}_2_link"/>
       <axis xyz="0 0 1"/>
       <dynamics damping="0" friction="0"/>
-      <limit effort="48" velocity="1.57" lower="${-1.91 + safety_offset}" upper="${1.91 - safety_offset}"/>   <!--Theoretical limit +/-170 , Real Limit +/- 110 (self collision)-->
+      <limit effort="48" velocity="1.57" lower="${-1.8 + safety_offset}" upper="${1.8 - safety_offset}"/>   <!--Theoretical limit +/-170 , Real Limit +/- 110 (self collision)-->
       <!--safety_controller k_position="20" k_velocity="50" soft_lower_limit="${-2.0943 + 0.01}" soft_upper_limit="${2.0943 - 0.01}" /-->
     </joint>
 
@@ -223,7 +224,7 @@
       <child link="${name}_5_link"/>
       <axis xyz="0 0 1" />
       <dynamics damping="0" friction="0"/>
-      <limit effort="48" velocity="1.57" lower="${-2.96 + safety_offset}" upper="${2.96 - safety_offset}"/>   <!--Theoretical limit +/-170 , Real Limit +/- 170-->
+      <limit effort="48" velocity="1.57" lower="${-2.76 + safety_offset}" upper="${2.76 - safety_offset}"/>   <!--Theoretical limit +/-170 , Real Limit +/- 170-->
       <!--safety_controller k_position="20" k_velocity="25" soft_lower_limit="${-M_PI + 0.01}" soft_upper_limit="${M_PI - 0.01}" /-->
     </joint>
 
@@ -259,7 +260,7 @@
       <child link="${name}_6_link"/>
       <axis xyz="0 0 1" />
       <dynamics damping="0" friction="0"/>
-      <limit effort="15" velocity="2.09" lower="${-2.96 + safety_offset}" upper="${2.96 - safety_offset}"/>   <!--Theoretical limit +/-170 , Real Limit -140/+170 (self collision)-->
+      <limit effort="15" velocity="2.09" lower="${-2.4 + safety_offset}" upper="${2.4 - safety_offset}"/>   <!--Theoretical limit +/-170 , Real Limit -140/+170 (self collision)-->
       <!--safety_controller k_position="20" k_velocity="25" soft_lower_limit="${-2.0943951 + 0.01}" soft_upper_limit="${2.0943951 - 0.01}" /-->
     </joint>
 
@@ -326,6 +327,14 @@
     <!-- extensions -->
     <xacro:schunk_lwa4p_extended_gazebo name="${name}" />
     <xacro:schunk_lwa4p_extended_transmission name="${name}" />
+
+    <!-- ros_control plugin -->
+    <gazebo>
+      <plugin name="ros_control" filename="libhwi_switch_gazebo_ros_control.so">
+        <robotNamespace>${name}</robotNamespace>
+        <filterJointsParam>joint_names</filterJointsParam>
+      </plugin>
+    </gazebo>
 
   </xacro:macro>
 
